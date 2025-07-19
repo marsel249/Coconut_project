@@ -6,15 +6,15 @@
 2. Если восстановленное здоровье превышает максимум (`max_health = 100`), установите здоровье равным `100`.
 3. Верните новое значение здоровья.'''
 
-# def restore_health(current_health, potion):
-#     max_health = 100
-#     health_after = current_health + potion
-#     if health_after > max_health:
-#         health_after = 100
-#     return health_after
-#
-# print(restore_health(50, 30))
-# print(restore_health(50, 60))
+def restore_health(current_health, potion):
+    max_health = 100
+    health_after = current_health + potion
+    if health_after > max_health:
+        health_after = 100
+    return health_after
+
+print(restore_health(50, 30))
+print(restore_health(50, 60))
 
 '''Задание 2: Гоблинский торговец Тема: Методы класса'''
 
@@ -43,21 +43,21 @@
 # x.buy_item('Нож', 43)
 # x.buy_item('Топор', 60)
 
-#Переписал правильно
-# class GoblinTrader:
-#     def __init__(self, gold):
-#         self.gold = gold
-#
-#     def buy_item(self, item_name, item_price):
-#         if self.gold >= item_price:
-#             self.gold -= item_price
-#             print(f'Покупка {item_name}, за {item_price} золотых, остаток золота: {self.gold}')
-#         else:
-#             print(f'Неудачная покупка {item_name}, за {item_price}, остаток золота: {self.gold}')
-#
-# x = GoblinTrader(100)
-# x.buy_item('Нож', 43)
-# x.buy_item('Топор', 60)
+# Переписал правильно
+class GoblinTrader:
+    def __init__(self, gold):
+        self.gold = gold
+
+    def buy_item(self, item_name, item_price):
+        if self.gold >= item_price:
+            self.gold -= item_price
+            print(f'Покупка {item_name}, за {item_price} золотых, остаток золота: {self.gold}')
+        else:
+            print(f'Неудачная покупка {item_name}, за {item_price}, остаток золота: {self.gold}')
+
+x = GoblinTrader(100)
+x.buy_item('Нож', 43)
+x.buy_item('Топор', 60)
 
 '''Задание 2.1: Гоблинский торговец (Методы класса и статические методы)'''
 
@@ -115,25 +115,25 @@
 
 
 # Вариант из урока
-# class GoblinMerchant:
-#     def __init__(self, gold):
-#         self.gold = gold
-#
-#     @staticmethod
-#     def tax_rate():
-#         return 0.1
-#
-#     @classmethod
-#     def from_rich_merchant(cls):
-#         return cls(1000)
-#
-#     def buy_item(self, item_name, item_price):
-#         total_price = item_price + item_price * self.tax_rate()
-#         if self.gold >= total_price:
-#             self.gold -= total_price
-#             return f"Куплен {item_name}"
-#         else:
-#             return "Недостаточно золота!"
+class GoblinMerchant:
+    def __init__(self, gold):
+        self.gold = gold
+
+    @staticmethod
+    def tax_rate():
+        return 0.1
+
+    @classmethod
+    def from_rich_merchant(cls):
+        return cls(1000)
+
+    def buy_item(self, item_name, item_price):
+        total_price = item_price + item_price * self.tax_rate()
+        if self.gold >= total_price:
+            self.gold -= total_price
+            return f"Куплен {item_name}"
+        else:
+            return "Недостаточно золота!"
 
 '''Задание 3: Боец и маг Тема: Наследование.'''
 
@@ -146,29 +146,29 @@
     - `Mage` с методом `attack`, который возвращает "Нанёс 15 урона заклинанием".
 3. Создайте объекты `Warrior` и `Mage` и вызовите их методы.'''
 
-# class Hero:
-#     def __init__(self, name, health):
-#         self.name = name
-#         self.health = health
-#
-#     def take_damage(self, damage):
-#         self.health -= damage
-#         # return self.health
-#         print(f'{self.name}, получил {damage}, здоровья осталось: {self.health}')
-#
-# class Warrior(Hero):
-#     def attack(self):
-#         return 'Нанёс 20 урона мечом'
-#
-# class Mage(Hero):
-#     def attac(self):
-#         return 'Нанёс 15 урона заклинанием'
-#
-# warrior = Warrior('Воин', 100)
-# mage = Mage('Маг', 85)
-#
-# print(warrior.attack())
-# print(mage.attac())
+class Hero:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+    def take_damage(self, damage):
+        self.health -= damage
+        # return self.health
+        print(f'{self.name}, получил {damage}, здоровья осталось: {self.health}')
+
+class Warrior(Hero):
+    def attack(self):
+        return 'Нанёс 20 урона мечом'
+
+class Mage(Hero):
+    def attac(self):
+        return 'Нанёс 15 урона заклинанием'
+
+warrior = Warrior('Воин', 100)
+mage = Mage('Маг', 85)
+
+print(warrior.attack())
+print(mage.attac())
 
 '''Задание 4: Задание на полиморфизм  '''
 
@@ -181,25 +181,25 @@
 2. Напишите функцию `daily_work`, которая принимает объект героя и вызывает его метод `work`.
 3. Протестируйте с обоими классами.'''
 
-# class Peon:
-#     def work(self):
-#         return 'Собирает золото'
-#
-# class Knight(Peon):
-#     def work(self):
-#         return 'Сражается с врагами'
-#
-# # a = Knight()
-# # print(a.work())
-#
-# def daily_work(a):
-#     print(a.work())
-#
-# # daily_work(Knight())
-#
-# my_class = [Knight(), Peon()]
-# for i in my_class:
-#     daily_work(i)
+class Peon:
+    def work(self):
+        return 'Собирает золото'
+
+class Knight(Peon):
+    def work(self):
+        return 'Сражается с врагами'
+
+# a = Knight()
+# print(a.work())
+
+def daily_work(a):
+    print(a.work())
+
+# daily_work(Knight())
+
+my_class = [Knight(), Peon()]
+for i in my_class:
+    daily_work(i)
 
 '''Задание 5: Секретные артефакты Тема: Абстракция.'''
 
@@ -211,27 +211,27 @@
     - `DamageArtifact`, метод `activate` возвращает: "Нанесено 30 урона врагу".
 3. Создайте объекты и вызовите метод `activate`.'''
 
-# from abc import ABC, abstractmethod
-#
-# class Artifact(ABC):
-#
-#     @abstractmethod
-#     def activate(self):
-#         pass
-#
-# class HealingArtifact(Artifact):
-#     def activate(self):
-#         return 'Восстановлено 50 здоровья'
-#
-# class DamageArtifact(Artifact):
-#     def activate(self):
-#         return 'Нанесено 30 урона врагу'
-#
-# x = HealingArtifact()
-# y = DamageArtifact()
-#
-# print(x.activate())
-# print(y.activate())
+from abc import ABC, abstractmethod
+
+class Artifact(ABC):
+
+    @abstractmethod
+    def activate(self):
+        pass
+
+class HealingArtifact(Artifact):
+    def activate(self):
+        return 'Восстановлено 50 здоровья'
+
+class DamageArtifact(Artifact):
+    def activate(self):
+        return 'Нанесено 30 урона врагу'
+
+x = HealingArtifact()
+y = DamageArtifact()
+
+print(x.activate())
+print(y.activate())
 
 
 '''Задание 6: Гоблинский банк  Тема: Инкапсуляция.'''
@@ -250,41 +250,41 @@
     Если золота недостаточно, выводит сообщение: "Недостаточно золота!".
 3. Протестируйте класс, создав объект и выполняя операции с золотом.'''
 
-# class GoblinBank:
-#     def __init__(self, gold):
-#         self.__gold = gold
-#         if self.__gold < 0:
-#             raise ValueError ('gold < 0')
-#
-#     @property
-#     def get_gold(self):
-#         return self.__gold
-#
-#     # @gold.setter
-#     def deposit_gold(self, amount):
-#         if amount > 0:
-#             self.__gold += amount
-#             return self.__gold
-#         else:
-#             raise ValueError ('amount < 0')
-#
-#     # @gold.setter
-#     def withdraw_gold(self, amount):
-#         if amount <= self.__gold:
-#             self.__gold -= amount
-#             return self.__gold
-#         else:
-#             raise ValueError ('you want withdraw amount > deposit')
-#
-# bank = GoblinBank(100)
-#
-# try:
-#     print(bank.get_gold)  # Вывод: 100
-#     print(bank.deposit_gold(50))   # Вывод: Добавлено 50 золота. Текущий баланс: 150
-#     print(bank.withdraw_gold(30))  # Вывод: Снято 30 золота. Текущий баланс: 120
-#     print(bank.withdraw_gold(200)) # Вывод: Недостаточно золота!
-# except ValueError as e:
-#     print(f'Error {e}')
+class GoblinBank:
+    def __init__(self, gold):
+        self.__gold = gold
+        if self.__gold < 0:
+            raise ValueError ('gold < 0')
+
+    @property
+    def get_gold(self):
+        return self.__gold
+
+    # @gold.setter
+    def deposit_gold(self, amount):
+        if amount > 0:
+            self.__gold += amount
+            return self.__gold
+        else:
+            raise ValueError ('amount < 0')
+
+    # @gold.setter
+    def withdraw_gold(self, amount):
+        if amount <= self.__gold:
+            self.__gold -= amount
+            return self.__gold
+        else:
+            raise ValueError ('you want withdraw amount > deposit')
+
+bank = GoblinBank(100)
+
+try:
+    print(bank.get_gold)  # Вывод: 100
+    print(bank.deposit_gold(50))   # Вывод: Добавлено 50 золота. Текущий баланс: 150
+    print(bank.withdraw_gold(30))  # Вывод: Снято 30 золота. Текущий баланс: 120
+    print(bank.withdraw_gold(200)) # Вывод: Недостаточно золота!
+except ValueError as e:
+    print(f'Error {e}')
 
 
 
