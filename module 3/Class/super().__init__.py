@@ -27,3 +27,18 @@
 #
 # cat = Cat()
 # cat.make_sound()
+
+# class Animal:
+#     def __init__(self, name):
+#         print("Animal init called")
+#         self.name = name
+#
+# class Dog(Animal):
+#     def __init__(self, name, breed):
+#         print("Dog init called")
+#         super().__init__(name)  # Вызов __init__ родителя
+#         self.breed = breed
+#
+# dog = Dog("Rex", "Bulldog")
+# print(dog.name)  # Rex
+# print(dog.breed)  # Bulldog

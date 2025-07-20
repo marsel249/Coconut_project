@@ -10,7 +10,7 @@ def restore_health(current_health, potion):
     max_health = 100
     health_after = current_health + potion
     if health_after > max_health:
-        health_after = 100
+        health_after = max_health
     return health_after
 
 print(restore_health(50, 30))
@@ -268,7 +268,6 @@ class GoblinBank:
         else:
             raise ValueError ('amount < 0')
 
-    # @gold.setter
     def withdraw_gold(self, amount):
         if amount <= self.__gold:
             self.__gold -= amount
