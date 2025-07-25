@@ -1,0 +1,10 @@
+.venv/
+.venv1/
+assets/
+Coconut tests.iml
+report.html
+module_4/example.env
+module_4/test_example.py
+module_4/Cinescope/enums
+module_4/Cinescope/tests/api/test_other_api.py
+module_4/Cinescope/tests/ui
