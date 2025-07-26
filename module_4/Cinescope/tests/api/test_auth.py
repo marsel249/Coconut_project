@@ -172,9 +172,10 @@
 
 import pytest
 import requests
-from module_4.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT
+from module_4.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
 from module_4.Cinescope.custom_requester.custom_requester import CustomRequester
 from module_4.Cinescope.api.api_manager import ApiManager
+
 
 class TestAuthAPI:
     def test_register_user(self, api_manager: ApiManager, test_user):
@@ -204,3 +205,16 @@ class TestAuthAPI:
         # Проверки
         assert "accessToken" in response_data, "Токен доступа отсутствует в ответе"
         assert response_data["user"]["email"] == registered_user["email"], "Email не совпадает"
+
+    def test_authenticate(self, api_manager: ApiManager):
+        """
+        Тест на аутенфикацию админа
+        """
+        # login_data = SUPER_ADMIN_CREDS
+
+        response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
+        response_data = response.json()
+
+        # Проверки
+        assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
+        assert "SUPER_ADMIN" in response_data["roles"], "Роль SUPER_ADMIN должна быть у пользователя"

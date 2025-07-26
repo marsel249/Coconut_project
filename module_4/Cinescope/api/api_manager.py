@@ -1,5 +1,6 @@
 from module_4.Cinescope.api.auth_api import AuthAPI
 from module_4.Cinescope.api.user_api import UserAPI
+from module_4.Cinescope.api.movies_api import MoviesAPI
 
 class ApiManager:
     """
@@ -13,6 +14,7 @@ class ApiManager:
         self.session = session
         self.auth_api = AuthAPI(session)
         self.user_api = UserAPI(session)
+        self.movies_api = MoviesAPI(session)
 
 '''
     Pytest->>TestFile: Запуск теста test_register_user()

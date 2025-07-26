@@ -1,10 +1,10 @@
 #booker
-
+import random
 
 from faker import Faker
 import pytest
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
 from custom_requester.custom_requester import CustomRequester
 from utils.data_generator import DataGenerator
 from api.api_manager import ApiManager
@@ -71,4 +71,30 @@ def api_manager(session):
     Инициализирует ApiManager с общей сессией. Предоставляет единую точку доступа ко всем API
     """
     return ApiManager(session)
+
+@pytest.fixture()
+def super_admin_auth(self):
+    '''авторизация супер админа'''
+    response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
+    return response
+
+@pytest.fixture()
+def create_movie(self, super_admin_auth, expected_status=201):
+
+    movie_data = {
+  "name": faker.word(),
+  "imageUrl": faker.url(),
+  "price": random.randint(1, 10000),
+  "description": faker.text(),
+  "location": faker.city(),
+  "published": faker.boolean(),
+  "genreId": random.randint(1, 5)
+}
+    """Создать новый фильм"""
+    return self.send_request(
+        method="POST",
+        endpoint="/movie",
+        data=movie_data,
+        expected_status=expected_status
+    )
 

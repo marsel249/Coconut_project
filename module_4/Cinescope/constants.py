@@ -6,3 +6,7 @@ HEADERS = {
 
 LOGIN_ENDPOINT = "/login"
 REGISTER_ENDPOINT = "/register"
+
+
+CINESCOPE_URL = 'https://api.dev-cinescope.coconutqa.ru/'
+SUPER_ADMIN_CREDS = ('api1@gmail.com', 'asdqwe123Q')
