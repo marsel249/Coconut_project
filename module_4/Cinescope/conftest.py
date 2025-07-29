@@ -83,6 +83,7 @@ def super_admin_auth(api_manager):
 def create_movie(api_manager):
 
     locations_choice = ['MSK', 'SPB']
+    boolean_choice = ['true', 'false']
 
     movie_data = {
   "name": faker.word(),
@@ -90,7 +91,7 @@ def create_movie(api_manager):
   "price": random.randint(1, 10000),
   "description": faker.text(),
   "location": random.choice(locations_choice),
-  "published": faker.boolean(),
+  "published": bool(str(faker.boolean()).lower()), #random.choice(boolean_choice)
   "genreId": random.randint(1, 5)
 }
     """Создать новый фильм"""
@@ -129,18 +130,25 @@ def filter_params():
 
 @pytest.fixture()
 def patch_movie_data():
+    locations_choice = ['MSK', 'SPB']
+
     movie_data = {
         "name": faker.word(),
         "imageUrl": faker.url(),
         "price": random.randint(1, 10000),
         "description": faker.text(),
-        "location": faker.city(),
-        "published": faker.boolean(),
+        "location": random.choice(locations_choice),
+        "published": bool(str(faker.boolean()).lower()),
         "genreId": random.randint(1, 5)
     }
 
-    # items = list(movie_data.items())
-    # random.shuffle(items)
-    # shuffled_dict = dict(items)
-    # new_movie_data = {}
+    new_movie_data = {}
+    items = list(movie_data.items())
+    random.shuffle(items)
+    num_items = random.randint(1, len(items))
+    for key, value in items[:num_items]:
+        new_movie_data[key] = value
+
+    return new_movie_data
+
 

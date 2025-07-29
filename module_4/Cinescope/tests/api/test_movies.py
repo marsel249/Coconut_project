@@ -104,28 +104,26 @@ class TestAuthAPI:
     def test_del_movie(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание и удаление фильма'''
 
-        # response = super_admin_auth()
-        # response = create_movie()
-        # response_data = response.json()
-        # id_response = response_data['id']
-        # response = api_manager.movies_api.get_movie_by_id(id_response)
-        # response = api_manager.movies_api.delete_movie(id_response)
-        # response = api_manager.movies_api.get_movie_by_id(id_response)
-        #
-        # assert response.status_code == 404
+        mov_id = api_manager.movies_api.info_id(create_movie)
+        response = api_manager.movies_api.get_movie_by_id(mov_id)
+        mov_del = api_manager.movies_api.delete_movie(mov_id, expected_status=201)
+        response = api_manager.movies_api.get_movie_by_id(mov_id, expected_status=404)
+
+        assert response.status_code == 404, "Фильм не удален"
+
+
 
     def test_patch_movie(self, api_manager: ApiManager, super_admin_auth, create_movie, patch_movie_data):
 
         '''patch movie'''
 
-        # response = super_admin_auth()
-        # response = create_movie()
-        # response_data = response.json()
-        # id_response = response_data['id']
-        # response = api_manager.movies_api.update_movie(id_response, patch_movie_data)
-        # response = api_manager.movies_api.get_movie_by_id(id_response)
-        # new_response_data = response.json()
-        #
-        # assert new_response_data == response_data
+        first_id = api_manager.movies_api.info_id(create_movie)
+        first_response = api_manager.movies_api.get_movie_by_id(first_id)
+        response = api_manager.movies_api.update_movie(first_id, patch_movie_data)
+        second_id = response.json()['id']
+        response = api_manager.movies_api.get_movie_by_id(second_id)
+        x = response.json()
+        y = first_response.json()
+        assert response.json() != first_response.json(), "Данные фильма не изменились"
 
 
