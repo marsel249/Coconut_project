@@ -73,17 +73,17 @@ class TestAuthAPI:
                 f"ожидалось {filter_params['genreId']}")
 
             if "locations" in filter_params and filter_params["locations"]:
-                assert movie["location"] == filter_params["locations"], f"Локация фильма {movie['id']} не соответствует фильтру"
+                assert movie["location"] == filter_params["locations"], f"Локация, не соответствует фильтру"
             # x = movie["published"], переменная для отладки
             # y = filter_params["published"]
             if "published" in filter_params:
-                assert movie["published"] == filter_params["published"], f"Статус публикации фильма {movie['id']} не соответствует фильтру"
+                assert str(movie["published"]).lower() == filter_params["published"], f"Статус публикации, не соответствует фильтру"
 
             if "min_price" in filter_params:
-                assert movie["price"] < filter_params["min_price"], f"Цена фильма {movie['id']} меньше min_price"
+                assert movie["price"] >= filter_params["min_price"], f"Цена фильма {movie['id']} меньше min_price"
 
             if "max_price" in filter_params:
-                assert movie["price"] > filter_params["max_price"], f"Цена фильма {movie['id']} больше max_price"
+                assert movie["price"] <= filter_params["max_price"], f"Цена фильма {movie['id']} больше max_price"
 
     def test_create_film(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание фильма, запрос фильма по id, проверка, что фильм создан'''
@@ -122,8 +122,8 @@ class TestAuthAPI:
         response = api_manager.movies_api.update_movie(first_id, patch_movie_data)
         second_id = response.json()['id']
         response = api_manager.movies_api.get_movie_by_id(second_id)
-        x = response.json()
-        y = first_response.json()
+        # x = response.json()
+        # y = first_response.json()
         assert response.json() != first_response.json(), "Данные фильма не изменились"
 
 
