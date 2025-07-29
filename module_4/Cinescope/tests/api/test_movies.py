@@ -49,6 +49,7 @@ class TestAuthAPI:
 
         # Проверки
         assert "movies" in response_data, "В ответе нет 'movies'"
+        assert isinstance(response_data["movies"], list), "movies должен быть списком"
 
     def test_get_filter_movies(self, api_manager: ApiManager, filter_params):
         """
@@ -98,7 +99,15 @@ class TestAuthAPI:
         first_id = api_manager.movies_api.info_id(create_movie) #тут получаем id созданного фикстурой фильма
         response = api_manager.movies_api.get_movie_by_id(first_id) #тут делаем гет, запрашиваем фильм
         second_id = api_manager.movies_api.info_id(response) #Сравниваем id полученный при создании, id запрошенного фильма
+
         assert first_id == second_id
+        assert create_movie.json()['name'] == response.json()['name']
+        assert create_movie.json()['imageUrl'] == response.json()['imageUrl']
+        assert create_movie.json()['price'] == response.json()['price']
+        assert create_movie.json()['description'] == response.json()['description']
+        assert create_movie.json()['location'] == response.json()['location']
+        assert create_movie.json()['published'] == response.json()['published']
+        assert create_movie.json()['genreId'] == response.json()['genreId']
 
 
     def test_del_movie(self, api_manager: ApiManager, super_admin_auth, create_movie):
@@ -110,6 +119,17 @@ class TestAuthAPI:
         response = api_manager.movies_api.get_movie_by_id(mov_id, expected_status=404)
 
         assert response.status_code == 404, "Фильм не удален"
+
+    def test_NEGATIVE_del_movie_1(self, api_manager: ApiManager, super_admin_auth, create_movie):
+        '''создание и удаление несуществующего фильма'''
+        # Узнаем id созданного фильма, добавляем число, проверяем, что такого фильма не существует, пытаемся его удалить.
+        mov_id = api_manager.movies_api.info_id(create_movie)+10000
+        response = api_manager.movies_api.get_movie_by_id(mov_id, expected_status=404)
+        mov_del = api_manager.movies_api.delete_movie(mov_id, expected_status=404)
+        # response = api_manager.movies_api.get_movie_by_id(mov_id, expected_status=404)
+
+        assert response.status_code == 404, "Фильм не удален"
+
 
 
 
@@ -125,5 +145,18 @@ class TestAuthAPI:
         # x = response.json()
         # y = first_response.json()
         assert response.json() != first_response.json(), "Данные фильма не изменились"
+
+
+    def test_NEGATIVE_patch_movie_1(self, api_manager: ApiManager, super_admin_auth, create_movie):
+
+        '''NEGATIVE patch movie, empty data'''
+
+        data = {}
+        id_movie = create_movie.json()['id']
+        before_response = api_manager.movies_api.get_movie_by_id(id_movie)
+        response = api_manager.movies_api.update_movie(id_movie, data)
+        after_response = api_manager.movies_api.get_movie_by_id(id_movie)
+
+        assert before_response.json() == after_response.json()
 
 
