@@ -72,3 +72,7 @@ class MoviesAPI(CustomRequester):
             endpoint=f"/movies/{movie_id}",
             expected_status=expected_status
         )
+
+    def info_id(self, variable):
+        x = variable.json()
+        return x['id']

@@ -88,14 +88,17 @@ class TestAuthAPI:
     def test_create_film(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание фильма, запрос фильма по id, проверка, что фильм создан'''
 
-        response_data = create_movie.json()
-
+        # response_data = create_movie.json()
+        # id_response = response_data['id']
+        # response = api_manager.movies_api.get_movie_by_id(id_response)
         # response_data = response.json()
-        id_response = response_data['id']
-        response = api_manager.movies_api.get_movie_by_id(id_response)
-        response_data = response.json()
-        if 'id' in response_data:
-            assert response_data['id'] == id_response
+        # if 'id' in response_data:
+        #     assert response_data['id'] == id_response
+
+        first_id = api_manager.movies_api.info_id(create_movie) #тут получаем id созданного фикстурой фильма
+        response = api_manager.movies_api.get_movie_by_id(first_id) #тут делаем гет, запрашиваем фильм
+        second_id = api_manager.movies_api.info_id(response) #Сравниваем id полученный при создании, id запрошенного фильма
+        assert first_id == second_id
 
 
     def test_del_movie(self, api_manager: ApiManager, super_admin_auth, create_movie):
