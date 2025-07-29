@@ -6,12 +6,13 @@ import pytest
 import requests
 from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
 from custom_requester.custom_requester import CustomRequester
+from module_4.requests.Session import response
 from utils.data_generator import DataGenerator
 from api.api_manager import ApiManager
 
 faker = Faker()
 
-@pytest.fixture()#scope="session")
+@pytest.fixture(scope="session")
 def test_user():
     """
     Генерация случайного пользователя для тестов.
@@ -73,28 +74,73 @@ def api_manager(session):
     return ApiManager(session)
 
 @pytest.fixture()
-def super_admin_auth(self):
+def super_admin_auth(api_manager):
     '''авторизация супер админа'''
     response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
     return response
 
 @pytest.fixture()
-def create_movie(self, super_admin_auth, expected_status=201):
+def create_movie(api_manager):
+
+    locations_choice = ['MSK', 'SPB']
 
     movie_data = {
   "name": faker.word(),
   "imageUrl": faker.url(),
   "price": random.randint(1, 10000),
   "description": faker.text(),
-  "location": faker.city(),
+  "location": random.choice(locations_choice),
   "published": faker.boolean(),
   "genreId": random.randint(1, 5)
 }
     """Создать новый фильм"""
-    return self.send_request(
-        method="POST",
-        endpoint="/movie",
-        data=movie_data,
-        expected_status=expected_status
-    )
+    response = api_manager.movies_api.create_movie(movie_data)
+    return response
+
+@pytest.fixture()
+def filter_params():
+    #Значения пока оставил рандомные
+
+    locations_choice = ['MSK', 'SPB']
+    created_at_choice = ['asc', 'desc']
+    boolean_choice = ['true', 'false']
+
+    pageSize = random.randint(1, 20)
+    page = random.randint(1, 5) #всего 2029 фильма
+    min_price = random.randint(1, 1000)
+    max_price = random.randint(1, 10000)
+    locations = random.choice(locations_choice)
+    published = str(faker.boolean()).lower()    #(random.choice(boolean_choice))
+    genreId = random.randint(1, 10)
+    createdAt = random.choice(created_at_choice)
+
+    params =  {
+        "pageSize": pageSize,
+        "page": page,
+        "min_price": min_price,
+        "max_price": max_price,
+        "locations": locations,
+        "published": published,
+        "genreId": genreId,
+        "createdAt": createdAt
+    }
+
+    return params
+
+@pytest.fixture()
+def patch_movie_data():
+    movie_data = {
+        "name": faker.word(),
+        "imageUrl": faker.url(),
+        "price": random.randint(1, 10000),
+        "description": faker.text(),
+        "location": faker.city(),
+        "published": faker.boolean(),
+        "genreId": random.randint(1, 5)
+    }
+
+    # items = list(movie_data.items())
+    # random.shuffle(items)
+    # shuffled_dict = dict(items)
+    # new_movie_data = {}
 

@@ -213,8 +213,9 @@ class TestAuthAPI:
         # login_data = SUPER_ADMIN_CREDS
 
         response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
-        response_data = response.json()
+        # response = type(response)
+        # response_data = response.json()
 
         # Проверки
-        assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
-        assert "SUPER_ADMIN" in response_data["roles"], "Роль SUPER_ADMIN должна быть у пользователя"
+        assert "roles" in response['user'], "Роли пользователя отсутствуют в ответе"
+        assert "SUPER_ADMIN" in response['user']['roles'], "Роль SUPER_ADMIN должна быть у пользователя"

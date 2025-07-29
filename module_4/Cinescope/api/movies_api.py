@@ -7,39 +7,34 @@ class MoviesAPI(CustomRequester):
     def __init__(self, session):
         super().__init__(session=session, base_url=CINESCOPE_URL)
 
-    def get_all_movies(self, page=1, page_size=10, min_price=None, max_price=None,
-                       locations=None, published=None, sort=None, expected_status=200):
+    def get_all_movies(self, pageSize=10, page=1, min_price=None, max_price=None,
+                       locations=None, published=None, genreId=None, sort=None, createdAt=None, expected_status=200):
         """
-        Получить список фильмов с пагинацией и фильтрами
+        Получить список фильмов с пагинацией и фильтрами"""
 
-        page: номер страницы (по умолчанию 1)
-        page_size: количество на странице (по умолчанию 10)
-        min_price: минимальная цена
-        max_price: максимальная цена
-        locations: города через запятую (например "MSK,SPB")
-        published: только опубликованные (True/False)
-        sort: сортировка (например "createdAt:asc")
-        expected_status: ожидаемый статус ответа
-        """
         params = {
-            "page": page,
-            "pageSize": page_size
+            "pageSize": pageSize,
+            "page": page
         }
 
         if min_price is not None:
             params["minPrice"] = min_price
         if max_price is not None:
             params["maxPrice"] = max_price
-        if locations:
+        if locations is not None:
             params["locations"] = locations
         if published is not None:
-            params["published"] = str(published).lower()
-        if sort:
+            params["published"] = published
+        if genreId is not None:
+            params['genreId'] = genreId
+        if sort is not None:
             params["sort"] = sort
+        if createdAt is not None:
+            params["createdAt"] = createdAt
 
         return self.send_request(
             method="GET",
-            endpoint="/movie",
+            endpoint="/movies",
             params=params,
             expected_status=expected_status
         )
@@ -48,7 +43,7 @@ class MoviesAPI(CustomRequester):
         """Получить фильм по ID"""
         return self.send_request(
             method="GET",
-            endpoint=f"/movie/{movie_id}",
+            endpoint=f"/movies/{movie_id}",
             expected_status=expected_status
         )
 
@@ -56,7 +51,7 @@ class MoviesAPI(CustomRequester):
         """Создать новый фильм"""
         return self.send_request(
             method="POST",
-            endpoint="/movie",
+            endpoint="/movies",
             data=movie_data,
             expected_status=expected_status
         )
@@ -65,7 +60,7 @@ class MoviesAPI(CustomRequester):
         """Обновить данные фильма"""
         return self.send_request(
             method="PATCH",
-            endpoint=f"/movie/{movie_id}",
+            endpoint=f"/movies/{movie_id}",
             data=update_data,
             expected_status=expected_status
         )
@@ -74,6 +69,6 @@ class MoviesAPI(CustomRequester):
         """Удалить фильм"""
         return self.send_request(
             method="DELETE",
-            endpoint=f"/movie/{movie_id}",
+            endpoint=f"/movies/{movie_id}",
             expected_status=expected_status
         )

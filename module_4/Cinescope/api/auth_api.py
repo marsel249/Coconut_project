@@ -24,7 +24,7 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def login_user(self, login_data, expected_status=201):
+    def login_user(self, login_data, expected_status=200):
         """
         Авторизация пользователя.
         :param login_data: Данные для логина.
@@ -43,9 +43,12 @@ class AuthAPI(CustomRequester):
             "password": user_creds[1]
         }
 
-        response = self.login_user(login_data).json()
-        if "accessToken" not in response:
+        response = self.login_user(login_data)
+        response_data = response.json()
+        if "accessToken" not in response_data:
             raise KeyError("token is missing")
 
-        token = response["accessToken"]
+        token = response_data["accessToken"]
         self._update_session_headers(**{"authorization": "Bearer " + token})
+
+        return response_data
