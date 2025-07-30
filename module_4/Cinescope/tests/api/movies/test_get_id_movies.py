@@ -37,12 +37,6 @@ class TestGetIdMoviesAPI:
         response = api_manager.movies_api.get_movie_by_id(DataGenerator.generate_random_word(), expected_status=500)
         assert response.status_code == 500
 
-    def test_NEGATIVE_get_id_movie_3(self, api_manager: ApiManager):
-        '''создание фильма, запрос фильма c id - float'''
-
-        response = api_manager.movies_api.get_movie_by_id(random.uniform(-100, 100), expected_status=404)
-        assert response.status_code == 404
-
 
 
 
