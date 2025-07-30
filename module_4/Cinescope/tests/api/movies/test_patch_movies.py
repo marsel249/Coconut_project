@@ -35,3 +35,5 @@ class TestPatchMoviesAPI:
         assert before_response.json() == after_response.json()
 
 
+# data = {"authorization": "Bearer "}
+#         clear_token = CustomRequester._update_session_headers(**data)

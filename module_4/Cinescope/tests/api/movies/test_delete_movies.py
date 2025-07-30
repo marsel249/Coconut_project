@@ -16,7 +16,7 @@ class TestDelMoviesAPI:
 
         mov_id = api_manager.movies_api.info_id(create_movie)
         response = api_manager.movies_api.get_movie_by_id(mov_id)
-        mov_del = api_manager.movies_api.delete_movie(mov_id, expected_status=201)
+        mov_del = api_manager.movies_api.delete_movie(mov_id, expected_status=200)
         response = api_manager.movies_api.get_movie_by_id(mov_id, expected_status=404)
 
         assert response.status_code == 404, "Фильм не удален"

@@ -51,7 +51,7 @@ class DataGenerator:
         # boolean_choice = ['true', 'false']
 
         movie_data = {
-            "name": faker.word(),
+            "name": " ".join(faker.words(2)), #faker.word(),
             "imageUrl": faker.url(),
             "price": random.randint(1, 10000),
             "description": faker.text(),
@@ -66,3 +66,10 @@ class DataGenerator:
     def generate_random_name(length):
         return ''.join(faker.random_letters(length))
 
+    @staticmethod
+    def generate_random_city():
+        return faker.city()
+
+    @staticmethod
+    def generate_random_word():
+        return faker.word()

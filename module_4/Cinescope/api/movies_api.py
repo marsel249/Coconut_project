@@ -7,16 +7,17 @@ class MoviesAPI(CustomRequester):
     def __init__(self, session):
         super().__init__(session=session, base_url=CINESCOPE_URL)
 
-    def get_all_movies(self, pageSize=10, page=1, min_price=None, max_price=None,
+    def get_all_movies(self, pageSize=None, page=None, min_price=None, max_price=None,
                        locations=None, published=None, genreId=None, sort=None, createdAt=None, expected_status=200):
         """
         Получить список фильмов с пагинацией и фильтрами"""
 
-        params = {
-            "pageSize": pageSize,
-            "page": page
-        }
+        params = {}
 
+        if pageSize is not None:
+            params["pageSize"] = pageSize
+        if page is not None:
+            params["page"] = page
         if min_price is not None:
             params["minPrice"] = min_price
         if max_price is not None:

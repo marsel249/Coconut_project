@@ -11,7 +11,7 @@ from module_4.Cinescope.utils.data_generator import DataGenerator
 class TestGetMoviesAPI:
     def test_get_all_movies(self, api_manager: ApiManager):
         """
-        Тест на получение фильмов, с заданными параметрами пагинации.
+        Тест на получение фильмов, без параметров
         """
 
         response = api_manager.movies_api.get_all_movies()
@@ -23,7 +23,7 @@ class TestGetMoviesAPI:
 
     def test_get_filter_movies(self, api_manager: ApiManager, filter_params):
         """
-        Тест на получение фильмов, с заданными параметрами пагинации.
+        Тест на получение фильмов, с заданными параметрами.
         """
 
         response = api_manager.movies_api.get_all_movies(**filter_params)
@@ -45,8 +45,6 @@ class TestGetMoviesAPI:
 
             if "locations" in filter_params and filter_params["locations"]:
                 assert movie["location"] == filter_params["locations"], f"Локация, не соответствует фильтру"
-            # x = movie["published"], переменная для отладки
-            # y = filter_params["published"]
             if "published" in filter_params:
                 assert str(movie["published"]).lower() == filter_params["published"], f"Статус публикации, не соответствует фильтру"
 
@@ -56,7 +54,7 @@ class TestGetMoviesAPI:
             if "max_price" in filter_params:
                 assert movie["price"] <= filter_params["max_price"], f"Цена фильма {movie['id']} больше max_price"
 
-    def test_NEGATIVE_get_filter_movies1(self, api_manager: ApiManager, filter_params):
+    def test_NEGATIVE_get_page_1(self, api_manager: ApiManager, filter_params):
         """
         Тест на поиск страницы > 20.
         """
@@ -70,5 +68,221 @@ class TestGetMoviesAPI:
         assert isinstance(response_data["message"], list), "message должен быть списком"
         assert response.status_code == 400
 
+    def test_NEGATIVE_get_page_2(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы = 0.
+        """
+
+        filter_params['pageSize'] = 0
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_get_page_3(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c отрицательны числом.
+        """
+
+        filter_params['pageSize'] = random.randint(-10, -1)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_get_page_4(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page - str.
+        """
+
+        filter_params['pageSize'] = DataGenerator.generate_random_word()
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_get_page_5(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page - float.
+        """
+
+        filter_params['pageSize'] = random.uniform(1, 20)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_location_1(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c неверной локацией.
+        """
+
+        filter_params['locations'] = DataGenerator.generate_random_city()
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_location_2(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c неверной локацией.
+        """
+
+        filter_params['locations'] = random.randint(-100, 100)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_page_1(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page = 0.
+        """
+
+        filter_params['page'] = 0
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_page_2(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page < 0.
+        """
+
+        filter_params['page'] = random.randint(-10, -1)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_page_3(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page - str.
+        """
+
+        filter_params['page'] = DataGenerator.generate_random_word()
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_page_4(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c page - float.
+        """
+
+        filter_params['page'] = random.uniform(1,20)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_min_price_1(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c min_price < 0.
+        """
+
+        filter_params['min_price'] = random.randint(-10, -1)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_max_price_2(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c max_price < min_price.
+        """
+        num_max = 1
+        num_min = 0
+
+        while num_max > num_min:
+            num_min = random.randint(0, 10000)
+            num_max = random.randint(0, 10000)
+
+        filter_params['min_price'] = num_min
+        filter_params['max_price'] = num_max
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert response.status_code == 400
+
+
+    def test_NEGATIVE_wrong_genre_id_1(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c genreId = 0.
+        """
+
+        filter_params['genreId'] = 0
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_genre_id_2(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c genreId - строка.
+        """
+
+        filter_params['genreId'] = DataGenerator.generate_random_word()
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
+
+    def test_NEGATIVE_wrong_genre_id_3(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы c genreId - float.
+        """
+
+        filter_params['genreId'] = random.uniform(1,10)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response.status_code == 400
 
 
