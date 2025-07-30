@@ -1,9 +1,13 @@
+import random
+
 import pytest
 import requests
 from module_4.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
 from module_4.Cinescope.custom_requester.custom_requester import CustomRequester
 from module_4.Cinescope.api.api_manager import ApiManager
 from module_4.requests.Session import response
+from module_4.Cinescope.utils.data_generator import DataGenerator
+
 
 
 class TestAuthAPI:
@@ -86,6 +90,22 @@ class TestAuthAPI:
             if "max_price" in filter_params:
                 assert movie["price"] <= filter_params["max_price"], f"Цена фильма {movie['id']} больше max_price"
 
+    def test_NEGATIVE_get_filter_movies1(self, api_manager: ApiManager, filter_params):
+        """
+        Тест на поиск страницы > 20.
+        """
+        # response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
+        filter_params['pageSize'] = random.randint(21, 100)
+        response = api_manager.movies_api.get_all_movies(**filter_params, expected_status=400)
+        response_data = response.json()
+
+        # Проверки
+        assert "message" in response_data, "Response не содержит сообщения об ошибке"
+        assert isinstance(response_data["message"], list), "message должен быть списком"
+        assert response_data.status_code == 400
+
+
+
     def test_create_film(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание фильма, запрос фильма по id, проверка, что фильм создан'''
 
@@ -108,6 +128,21 @@ class TestAuthAPI:
         assert create_movie.json()['location'] == response.json()['location']
         assert create_movie.json()['published'] == response.json()['published']
         assert create_movie.json()['genreId'] == response.json()['genreId']
+
+
+    def test_NEGATIVE_create_film_1(self, api_manager: ApiManager, super_admin_auth):
+        '''создание фильма, c name < 3 символов'''
+
+        name = DataGenerator.generate_random_name(2)
+
+        movie_data = DataGenerator.generate_random_movie()
+        movie_data['name'] = name
+
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert isinstance(create_movie.json()["message"], list), "message должен быть списком"
+        assert create_movie.status_code == 400
 
 
     def test_del_movie(self, api_manager: ApiManager, super_admin_auth, create_movie):

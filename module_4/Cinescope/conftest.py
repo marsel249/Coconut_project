@@ -83,10 +83,10 @@ def super_admin_auth(api_manager):
 def create_movie(api_manager):
 
     locations_choice = ['MSK', 'SPB']
-    boolean_choice = ['true', 'false']
+    # boolean_choice = ['true', 'false']
 
     movie_data = {
-  "name": faker.word(),
+  "name": " ".join(faker.words(2)), #faker.word(),
   "imageUrl": faker.url(),
   "price": random.randint(1, 10000),
   "description": faker.text(),

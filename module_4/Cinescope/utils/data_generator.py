@@ -44,3 +44,25 @@ class DataGenerator:
         random.shuffle(password)
 
         return ''.join(password)
+
+    @staticmethod
+    def generate_random_movie():
+        locations_choice = ['MSK', 'SPB']
+        # boolean_choice = ['true', 'false']
+
+        movie_data = {
+            "name": faker.word(),
+            "imageUrl": faker.url(),
+            "price": random.randint(1, 10000),
+            "description": faker.text(),
+            "location": random.choice(locations_choice),
+            "published": bool(str(faker.boolean()).lower()),  # random.choice(boolean_choice)
+            "genreId": random.randint(1, 5)
+        }
+
+        return movie_data
+
+    @staticmethod
+    def generate_random_name(length):
+        return ''.join(faker.random_letters(length))
+
