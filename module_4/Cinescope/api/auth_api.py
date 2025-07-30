@@ -24,7 +24,7 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def login_user(self, login_data, expected_status=201):
+    def login_user(self, login_data, expected_status=200):
         """
         Авторизация пользователя.
         :param login_data: Данные для логина.
@@ -52,3 +52,9 @@ class AuthAPI(CustomRequester):
         self._update_session_headers(**{"authorization": "Bearer " + token})
 
         return response_data
+
+    def del_auth(self):
+
+        data = {"authorization": "Bearer "}
+
+        clear_token = self.session.headers.update(data)

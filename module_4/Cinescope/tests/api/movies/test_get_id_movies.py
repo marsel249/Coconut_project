@@ -21,12 +21,26 @@ class TestGetIdMoviesAPI:
 
         assert first_id == second_id
 
-    def test_NEGATIVE_get_id_movie(self, api_manager: ApiManager, super_admin_auth, create_movie):
+    def test_NEGATIVE_get_id_movie_1(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание фильма, запрос фильма c несуществующим id'''
 
-        first_id = api_manager.movies_api.info_id(create_movie) #тут получаем id созданного фикстурой фильма
-        response = api_manager.movies_api.get_movie_by_id(first_id+10000, expected_status=404) #тут делаем гет, запрашиваем несуществующий фильм
+        first_id = api_manager.movies_api.info_id(create_movie)
+        response = api_manager.movies_api.get_movie_by_id(first_id+10000, expected_status=404)
 
+        assert response.status_code == 404
+
+    def test_NEGATIVE_get_id_movie_2(self, api_manager: ApiManager):
+        '''создание фильма, запрос фильма c id - str
+
+        Error - 500? '''
+
+        response = api_manager.movies_api.get_movie_by_id(DataGenerator.generate_random_word(), expected_status=500)
+        assert response.status_code == 500
+
+    def test_NEGATIVE_get_id_movie_3(self, api_manager: ApiManager):
+        '''создание фильма, запрос фильма c id - float'''
+
+        response = api_manager.movies_api.get_movie_by_id(random.uniform(-100, 100), expected_status=404)
         assert response.status_code == 404
 
 

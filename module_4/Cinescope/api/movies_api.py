@@ -77,3 +77,4 @@ class MoviesAPI(CustomRequester):
     def info_id(self, variable):
         x = variable.json()
         return x['id']
+

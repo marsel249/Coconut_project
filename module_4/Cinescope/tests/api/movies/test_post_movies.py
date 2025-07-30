@@ -34,9 +34,7 @@ class TestPostMoviesAPI:
     def test_NEGATIVE_without_auth(self, api_manager: ApiManager):
         '''создание фильма, без аутенфикации'''
 
-        data = {"authorization": "Bearer "}
-
-        clear_token = api_manager.session.headers.update(data)
+        del_auth = api_manager.auth_api.del_auth()
 
         movie_data = DataGenerator.generate_random_movie()
         create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=401)
