@@ -259,12 +259,25 @@ class TestPatchMoviesAPI:
 
     def test_NEGATIVE_patch_genreId_2(self, api_manager: ApiManager, super_admin_auth, create_movie, patch_movie_data):
 
-        '''patch movie, imageUrl < 0 '''
+        '''patch movie, genreId < 0 '''
 
         id = api_manager.movies_api.info_id(create_movie)
         first_response = api_manager.movies_api.get_movie_by_id(id)
 
-        patch_movie_data['imageUrl'] = random.randint(-100, -1)
+        patch_movie_data['genreId'] = random.randint(-100, -1)
+
+        response = api_manager.movies_api.update_movie(id, patch_movie_data, expected_status=400)
+        response = api_manager.movies_api.get_movie_by_id(id)
+        assert response.json() == first_response.json(), "Данные фильма не изменились"
+
+    def test_NEGATIVE_patch_published_1(self, api_manager: ApiManager, super_admin_auth, create_movie, patch_movie_data):
+
+        '''patch movie, published nat a bool '''
+
+        id = api_manager.movies_api.info_id(create_movie)
+        first_response = api_manager.movies_api.get_movie_by_id(id)
+
+        patch_movie_data['published'] = 'notabool'
 
         response = api_manager.movies_api.update_movie(id, patch_movie_data, expected_status=400)
         response = api_manager.movies_api.get_movie_by_id(id)

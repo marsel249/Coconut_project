@@ -15,9 +15,9 @@ class TestPostMoviesAPI:
     def test_create_film(self, api_manager: ApiManager, super_admin_auth, create_movie):
         '''создание фильма, запрос фильма по id, проверка, что фильм создан'''
 
-        first_id = api_manager.movies_api.info_id(create_movie) #тут получаем id созданного фикстурой фильма
-        response = api_manager.movies_api.get_movie_by_id(first_id) #тут делаем гет, запрашиваем фильм
-        second_id = api_manager.movies_api.info_id(response) #Сравниваем id полученный при создании, id запрошенного фильма
+        first_id = api_manager.movies_api.info_id(create_movie) #status_code - 201, проверяется в movie api
+        response = api_manager.movies_api.get_movie_by_id(first_id)
+        second_id = api_manager.movies_api.info_id(response)
         create_movie = create_movie.json()
         response = response.json()
 
@@ -29,6 +29,15 @@ class TestPostMoviesAPI:
         assert create_movie['location'] == response['location']
         assert create_movie['published'] == response['published']
         assert create_movie['genreId'] == response['genreId']
+
+    def test_create_without_element_imageUrl(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - imageUrl'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['imageUrl']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=201)
+
+        assert create_movie.status_code == 201
 
 
     def test_NEGATIVE_without_auth(self, api_manager: ApiManager):
@@ -286,4 +295,64 @@ class TestPostMoviesAPI:
 
         assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
         assert isinstance(create_movie.json()["message"], list), "message должен быть списком"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_name(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - name'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['name']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_price(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - price'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['price']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_description(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - description'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['description']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_location(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - location'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['location']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_published(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - published'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['published']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
+        assert create_movie.status_code == 400
+
+    def test_NEGATIVE_create_without_element_genreId(self, api_manager: ApiManager, super_admin_auth):
+        '''Попытка создать фильм, без элемента - genreId'''
+
+        movie_data = DataGenerator.generate_random_movie()
+        del movie_data['genreId']
+        create_movie = api_manager.movies_api.create_movie(movie_data, expected_status=400)
+
+        assert "message" in create_movie.json(), "Response не содержит сообщения об ошибке"
         assert create_movie.status_code == 400
