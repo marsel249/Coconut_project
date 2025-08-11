@@ -1,12 +1,7 @@
 import random
 
-import pytest
-import requests
-from module_4.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
-from module_4.Cinescope.custom_requester.custom_requester import CustomRequester
-from module_4.Cinescope.api.api_manager import ApiManager
-from module_4.requests.Session import response
-from module_4.Cinescope.utils.data_generator import DataGenerator
+from module_5.Cinescope.api.api_manager import ApiManager
+from module_5.Cinescope.utils.data_generator import DataGenerator
 
 class TestPatchMoviesAPI:
 

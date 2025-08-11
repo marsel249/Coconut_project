@@ -1,7 +1,7 @@
 
-from module_4.Cinescope.custom_requester.custom_requester import CustomRequester
-from module_4.Cinescope.constants import LOGIN_ENDPOINT, REGISTER_ENDPOINT
-from module_4.Cinescope.constants import BASE_URL
+from module_5.Cinescope.custom_requester.custom_requester import CustomRequester
+from module_5.Cinescope.constants import LOGIN_ENDPOINT, REGISTER_ENDPOINT
+from module_5.Cinescope.constants import BASE_URL
 
 class AuthAPI(CustomRequester):
     """
@@ -24,7 +24,7 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def login_user(self, login_data, expected_status=201):
+    def login_user(self, login_data, expected_status=200):
         """
         Авторизация пользователя.
         :param login_data: Данные для логина.
