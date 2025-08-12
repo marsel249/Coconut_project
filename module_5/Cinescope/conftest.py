@@ -176,6 +176,7 @@ def creation_user_data(test_user):
     })
     return updated_data
 
+
 @pytest.fixture
 def super_admin(user_session):
     new_session = user_session()
@@ -206,6 +207,7 @@ def common_user(user_session, super_admin, creation_user_data):
 @pytest.fixture
 def admin_user(user_session, super_admin, creation_user_data):
     new_session = user_session()
+    # creation_user_data['roles'] = ['ADMIN']
 
     admin_user = User(
         creation_user_data['email'],
