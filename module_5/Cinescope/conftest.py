@@ -10,6 +10,7 @@ from utils.data_generator import DataGenerator
 from api.api_manager import ApiManager
 from resources.user_creds import SuperAdminCreds
 from entities.user import User
+from enums.enums import Roles
 
 faker = Faker()
 
@@ -27,7 +28,7 @@ def test_user():
         "fullName": random_name,
         "password": random_password,
         "passwordRepeat": random_password,
-        "roles": ["USER"]
+        "roles": Roles.USER.value
     }
 
 @pytest.fixture()#scope="session")
@@ -167,19 +168,6 @@ def user_session():
     for user in user_pool:
         user.close_session()
 
-@pytest.fixture
-def super_admin(user_session):
-    new_session = user_session()
-
-    super_admin = User(
-        SuperAdminCreds.USERNAME,
-        SuperAdminCreds.PASSWORD,
-        "[SUPER_ADMIN]",
-        new_session)
-
-    super_admin.api.auth_api.authenticate(super_admin.creds)
-    return super_admin
-
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
     updated_data = test_user.copy()
@@ -187,5 +175,46 @@ def creation_user_data(test_user):
         "verified": True, "banned": False
     })
     return updated_data
+
+@pytest.fixture
+def super_admin(user_session):
+    new_session = user_session()
+
+    super_admin = User(
+        SuperAdminCreds.USERNAME,
+        SuperAdminCreds.PASSWORD,
+        Roles.SUPER_ADMIN.value,
+        new_session)
+
+    super_admin.api.auth_api.authenticate(super_admin.creds)
+    return super_admin
+
+@pytest.fixture
+def common_user(user_session, super_admin, creation_user_data):
+    new_session = user_session()
+
+    common_user = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        Roles.USER.value,
+        new_session)
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    common_user.api.auth_api.authenticate(common_user.creds)
+    return common_user
+
+@pytest.fixture
+def admin_user(user_session, super_admin, creation_user_data):
+    new_session = user_session()
+
+    admin_user = User(
+        creation_user_data['email'],
+        creation_user_data['password'],
+        Roles.ADMIN.value,
+        new_session)
+
+    super_admin.api.user_api.create_user(creation_user_data)
+    admin_user.api.auth_api.authenticate(admin_user.creds)
+    return admin_user
 
 
