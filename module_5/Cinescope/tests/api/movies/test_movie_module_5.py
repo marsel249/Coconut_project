@@ -130,11 +130,16 @@ def test_del_movie_with_roles(role, super_admin, name, price, imageUrl, expected
     if expected_status != 200:
         super_admin.api.movies_api.delete_movie(mov_id)
 
-def test_del_movie(super_admin, admin_user):
+def test_del_movie_(super_admin, admin_user):
     movie = DataGenerator.generate_random_movie()
     response = super_admin.api.movies_api.create_movie(movie)
     movie_id = super_admin.api.movies_api.info_id(response)
     # super_admin.api.movies_api.delete_movie(movie_id, expected_status=200)
     admin_user.api.movies_api.delete_movie(movie_id, expected_status=403)
+
+def test_get_user_by_id_common_user(admin_user):
+        # common_user.api.user_api.get_user(common_user.email, expected_status=403)
+        admin_user.api.user_api.get_user(common_user.email, expected_status=403) #Пользователь возвращеается "USER", WTF!?!?
+
 
 
