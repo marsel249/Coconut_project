@@ -1,5 +1,5 @@
 import pytest
-from constants import BASE_URL
+from module_5.Restful_Booker.constants import BASE_URL
 import random
 import requests
 

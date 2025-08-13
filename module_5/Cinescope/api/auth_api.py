@@ -58,3 +58,4 @@ class AuthAPI(CustomRequester):
         data = {"authorization": "Bearer "}
 
         clear_token = self.session.headers.update(data)
+

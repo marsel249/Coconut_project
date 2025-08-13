@@ -65,9 +65,9 @@
 from faker import Faker
 import pytest
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT
-from custom_requester.custom_requester import CustomRequester
-from utils.data_generator import DataGenerator
+from module_5.Restful_Booker.constants import BASE_URL
+from module_5.Restful_Booker.custom_requester.custom_requester import CustomRequester
+from module_5.Restful_Booker.utils.data_generator import DataGenerator
 
 faker = Faker()
 

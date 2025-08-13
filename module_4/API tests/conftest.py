@@ -1,7 +1,7 @@
 import pytest
 import requests
 from faker import Faker
-from constants import HEADERS, BASE_URL
+from module_4.Cinescope.constants import HEADERS, BASE_URL
 
 faker = Faker()
 

@@ -4,11 +4,10 @@ import random
 from faker import Faker
 import pytest
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
-from custom_requester.custom_requester import CustomRequester
-from module_4.requests.Session import response
-from utils.data_generator import DataGenerator
-from api.api_manager import ApiManager
+from module_4.Cinescope.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
+from module_4.Cinescope.custom_requester.custom_requester import CustomRequester
+from module_4.Cinescope.utils.data_generator import DataGenerator
+from module_4.Cinescope.api.api_manager import ApiManager
 
 faker = Faker()
 

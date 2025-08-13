@@ -47,3 +47,16 @@ class UserAPI(CustomRequester):
             data=user_data,
             expected_status=expected_status
         )
+
+    def change_role_to_admin(self, user_id: str, expected_status=200):
+        body = {
+            "roles": ["USER", "ADMIN"],
+            "verified": True,
+            "banned": False
+        }
+        return self.send_request(
+            method="PATCH",
+            endpoint=f"/user/{user_id}",
+            data=body,
+            expected_status=expected_status
+        )

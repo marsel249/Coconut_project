@@ -4,13 +4,13 @@ import random
 from faker import Faker
 import pytest
 import requests
-from constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
-from custom_requester.custom_requester import CustomRequester
-from utils.data_generator import DataGenerator
-from api.api_manager import ApiManager
-from resources.user_creds import SuperAdminCreds
-from entities.user import User
-from enums.enums import Roles
+from module_5.Cinescope.constants import BASE_URL, REGISTER_ENDPOINT, LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
+from module_5.Cinescope.custom_requester.custom_requester import CustomRequester
+from module_5.Cinescope.utils.data_generator import DataGenerator
+from module_5.Cinescope.api.api_manager import ApiManager
+from module_5.Cinescope.resources.user_creds import SuperAdminCreds
+from module_5.Cinescope.entities.user import User
+from module_5.Cinescope.enums.enums import Roles
 
 faker = Faker()
 
@@ -204,64 +204,31 @@ def common_user(user_session, super_admin, creation_user_data):
     common_user.api.auth_api.authenticate(common_user.creds)
     return common_user
 
-# @pytest.fixture
-# def admin_user(user_session, super_admin, creation_user_data):
-#     new_session = user_session()
-#
-#     admin_user = User(
-#         creation_user_data['email'],
-#         creation_user_data['password'],
-#         list(Roles.ADMIN.value),
-#         new_session)
-#
-#     super_admin.api.user_api.create_user(creation_user_data)
-#     admin_user.api.auth_api.authenticate(admin_user.creds)
-#     return admin_user
-
-# @pytest.fixture
-# def admin_user(user_session, super_admin, creation_user_data):
-#     new_session = user_session()
-#
-#     admin_user = User(
-#         creation_user_data['email'],
-#         creation_user_data['password'],
-#         list(Roles.ADMIN.value),
-#         new_session)
-#
-#     super_admin.api.user_api.create_user(creation_user_data)
-#     admin_user.api.auth_api.authenticate(admin_user.creds)
-#     return admin_user
-
-# @pytest.fixture
-# def admin_user(user_session, super_admin, creation_user_data):
-#     new_session = user_session()
-#
-#     admin_user = User(
-#         creation_user_data['email'],
-#         creation_user_data['password'],
-#         list(Roles.ADMIN.value),
-#         new_session)
-#
-#     super_admin.api.user_api.create_user(creation_user_data)
-#     admin_user.api.auth_api.authenticate(admin_user.creds)
-#     return admin_user
-
 
 @pytest.fixture
 def admin_user(user_session, super_admin, creation_user_data):
-    new_session = user_session()
+    session = user_session()
 
-    admin_data = creation_user_data.copy()
-    admin_data["roles"] = Roles.ADMIN.value
+    payload = dict(creation_user_data)
+    payload.setdefault("passwordRepeat", payload["password"])
+    payload.setdefault("verified", True)
+    payload.setdefault("banned", False)
 
-    admin_user = User(
-        admin_data['email'],
-        admin_data['password'],
-        admin_data['roles'],
-        new_session
-    )
+    create_resp = super_admin.api.user_api.create_user(payload, expected_status=201).json()
+    user_id = create_resp["id"]
 
-    super_admin.api.user_api.create_user(admin_data)
-    admin_user.api.auth_api.authenticate(admin_user.creds)
-    return admin_user
+    super_admin.api.user_api.change_role_to_admin(user_id, expected_status=200)
+
+    admin = User(payload["email"],
+                 payload["password"],
+                 Roles.ADMIN.value,
+                 session)
+
+    admin.api.auth_api.authenticate(admin.creds)
+
+    return admin
+
+
+
+
 

@@ -1,5 +1,6 @@
 .venv/
 .venv1/
+.venv2/
 assets/
 Coconut tests.iml
 report.html

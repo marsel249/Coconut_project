@@ -1,5 +1,5 @@
 import pytest
-from constants import BASE_URL
+from module_4.Cinescope.constants import BASE_URL
 import random
 import requests
 

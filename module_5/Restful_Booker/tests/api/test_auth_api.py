@@ -128,7 +128,7 @@
 
 
 import pytest
-from constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
+from module_5.Restful_Booker.constants import REGISTER_ENDPOINT, LOGIN_ENDPOINT
 
 
 class TestAuthAPI:
