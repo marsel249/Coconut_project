@@ -174,3 +174,43 @@
 # except Exception as e:
 #     print(e)
 
+# from pydantic import BaseModel, EmailStr, SecretStr, field_validator, model_validator, ConfigDict
+#
+# class Register(BaseModel):
+#     model_config = ConfigDict(extra="forbid")
+#
+#     email: EmailStr
+#     password: SecretStr
+#     password_repeat: SecretStr
+#
+#     # 1) Нормализуем пароли (обрезаем пробелы) ДО типизации
+#     @field_validator("password", "password_repeat", mode="before")
+#     @classmethod
+#     def strip_spaces(cls, v):
+#         s = v.get_secret_value() if hasattr(v, "get_secret_value") else str(v)
+#         return SecretStr(s.strip())
+#
+#     # 2) Проверяем силу пароля ПОСЛЕ типизации
+#     @field_validator("password")
+#     @classmethod
+#     def strong_password(cls, v: SecretStr) -> SecretStr:
+#         s = v.get_secret_value()
+#         if len(s) < 8:
+#             raise ValueError("min length = 8")
+#         return v
+#
+#     # 3) До сборки модели можем переименовать ключи входа
+#     @model_validator(mode="before")
+#     @classmethod
+#     def camel_to_snake(cls, data: dict):
+#         if "passwordRepeat" in data and "password_repeat" not in data:
+#             data = dict(data)
+#             data["password_repeat"] = data.pop("passwordRepeat")
+#         return data
+#
+#     # 4) После сборки модели сверяем поля между собой
+#     @model_validator(mode="after")
+#     def passwords_match(self):
+#         if self.password.get_secret_value() != self.password_repeat.get_secret_value():
+#             raise ValueError("Passwords don't match")
+#         return self
