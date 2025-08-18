@@ -1,8 +1,10 @@
 from module_5.Cinescope.constants import BASE_URL, HEADERS, REGISTER_ENDPOINT,  LOGIN_ENDPOINT, SUPER_ADMIN_CREDS
 from module_5.Cinescope.api.api_manager import ApiManager
+from module_5.Cinescope.models.base_models import RegisterUserResponse
 
 
 class TestAuthAPI:
+    '''До рефакторинга
     def test_register_user(self, api_manager: ApiManager, test_user):
         """
         Тест на регистрацию пользователя.
@@ -14,7 +16,13 @@ class TestAuthAPI:
         assert response_data["email"] == test_user["email"], "Email не совпадает"
         assert "id" in response_data, "ID пользователя отсутствует в ответе"
         assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
-        assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"
+        assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"'''
+
+    def test_register_user(self, api_manager: ApiManager, registration_user_data):
+        response = api_manager.auth_api.register_user(user_data=registration_user_data)
+        register_user_response = RegisterUserResponse(**response.json())
+        assert register_user_response.email == registration_user_data.email, "Email не совпадает"
+
 
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):
         """

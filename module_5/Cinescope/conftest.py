@@ -11,8 +11,13 @@ from module_5.Cinescope.api.api_manager import ApiManager
 from module_5.Cinescope.resources.user_creds import SuperAdminCreds
 from module_5.Cinescope.entities.user import User
 from module_5.Cinescope.enums.enums import Roles
+from module_5.Cinescope.models.base_models import TestUser
+from enum import Enum
 
 faker = Faker()
+
+'''
+Фикстура до рефакторинга
 
 @pytest.fixture(scope="session")
 def test_user():
@@ -29,7 +34,19 @@ def test_user():
         "password": random_password,
         "passwordRepeat": random_password,
         "roles": Roles.USER.value
-    }
+    }'''
+
+@pytest.fixture
+def test_user() -> TestUser:
+    random_password = DataGenerator.generate_random_password()
+
+    return TestUser(
+        email=DataGenerator.generate_random_email(),
+        fullName=DataGenerator.generate_random_name(),
+        password=random_password,
+        passwordRepeat=random_password,
+        roles=[Roles.USER]#[Roles.USER.value]
+    )
 
 @pytest.fixture()#scope="session")
 def registered_user(requester, test_user):
@@ -46,6 +63,9 @@ def registered_user(requester, test_user):
     registered_user = test_user.copy()
     registered_user["id"] = response_data["id"]
     return registered_user
+
+
+
 
 @pytest.fixture(scope="session")
 def requester():
@@ -168,13 +188,41 @@ def user_session():
     for user in user_pool:
         user.close_session()
 
+'''
+До рефакторинга
 @pytest.fixture(scope="function")
 def creation_user_data(test_user):
     updated_data = test_user.copy()
     updated_data.update({
         "verified": True, "banned": False
     })
-    return updated_data
+    return updated_data'''
+
+@pytest.fixture(scope="function")
+def creation_user_data(test_user: TestUser) -> dict:
+    payload = test_user.model_dump()  # Преобразовали модель test_user  в словарь
+    payload["verified"] = True
+    payload["banned"] = False
+
+    # Заодно гарантия: конвертируем Enum -> value, если вдруг что-то проскочило
+    # payload["roles"] = [
+    #     r.value if isinstance(r, Enum) else r
+    #     for r in payload.get("roles", [])
+    # ]
+
+    out = []
+    for r in payload.get("roles", []):
+        if isinstance(r, Enum):
+            out.append(r.value)
+        else:
+            out.append(r)
+    payload["roles"] = out
+
+    # Быстрая самопроверка перед отправкой
+    assert isinstance(payload["roles"], list)
+    assert all(isinstance(x, str) for x in payload["roles"])
+
+    return payload
 
 
 @pytest.fixture
