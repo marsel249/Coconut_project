@@ -48,6 +48,18 @@ def test_user() -> TestUser:
         roles=[Roles.USER]#[Roles.USER.value]
     )
 
+@pytest.fixture
+def registration_user_data() -> TestUser:
+    random_password = DataGenerator.generate_random_password()
+
+    return TestUser(
+        email=DataGenerator.generate_random_email(),
+        fullName=DataGenerator.generate_random_name(),
+        password=random_password,
+        passwordRepeat=random_password,
+        roles=[Roles.USER]#[Roles.USER.value]
+    )
+
 @pytest.fixture()#scope="session")
 def registered_user(requester, test_user):
     """

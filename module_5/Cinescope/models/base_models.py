@@ -1,9 +1,10 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field, field_validator, ValidationInfo
+from pydantic import BaseModel, Field, field_validator, ValidationInfo, ConfigDict
 from module_5.Cinescope.enums.enums import Roles
 
 class TestUser(BaseModel):
+
     email: str
     fullName: str
     password: str
@@ -12,6 +13,8 @@ class TestUser(BaseModel):
     verified: Optional[bool] = None
     banned: Optional[bool] = None
 
+    model_config = ConfigDict(use_enum_values=True)  # Enum -> .value
+
     @field_validator("passwordRepeat")
     def check_password_repeat(cls, value: str, info: ValidationInfo) -> str:
         # Проверяем, совпадение паролей
@@ -19,11 +22,11 @@ class TestUser(BaseModel):
             raise ValueError("Пароли не совпадают")
         return value
 
-    # Добавляем кастомный JSON-сериализатор для Enum
-    class Config:
-        json_encoders = {
-            Roles: lambda v: v.value  # Преобразуем Enum в строку
-        }
+    # # Добавляем кастомный JSON-сериализатор для Enum
+    # class Config:
+    #     json_encoders = {
+    #         Roles: lambda v: v.value  # Преобразуем Enum в строку
+    #     }
 
 class RegisterUserResponse(BaseModel):
     id: str

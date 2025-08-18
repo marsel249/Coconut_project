@@ -18,10 +18,10 @@ class TestAuthAPI:
         assert "roles" in response_data, "Роли пользователя отсутствуют в ответе"
         assert "USER" in response_data["roles"], "Роль USER должна быть у пользователя"'''
 
-    def test_register_user(self, api_manager: ApiManager, registration_user_data):
-        response = api_manager.auth_api.register_user(user_data=registration_user_data)
+    def test_register_user(self, api_manager: ApiManager, test_user):
+        response = api_manager.auth_api.register_user(user_data=test_user)
         register_user_response = RegisterUserResponse(**response.json())
-        assert register_user_response.email == registration_user_data.email, "Email не совпадает"
+        assert register_user_response.email == test_user.email, "Email не совпадает"
 
 
     def test_register_and_login_user(self, api_manager: ApiManager, registered_user):

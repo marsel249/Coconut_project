@@ -1,18 +1,23 @@
 import random
 import string
 from faker import Faker
+from uuid import uuid4
+from datetime import datetime, timezone
 
 faker = Faker()
 
 
 class DataGenerator:
 
+    # @staticmethod
+    # def generate_random_email():
+    #     random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+    #     return f"kek{random_string}@gmail.com"
+
     @staticmethod
-
-
-    def generate_random_email():
-        random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-        return f"kek{random_string}@gmail.com"
+    def generate_random_email() -> str:
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+        return f"autotest{ts}{uuid4().hex[:6]}@gmail.com"
 
 
     @staticmethod

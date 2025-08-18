@@ -2,6 +2,7 @@
 from module_5.Cinescope.custom_requester.custom_requester import CustomRequester
 from module_5.Cinescope.constants import LOGIN_ENDPOINT, REGISTER_ENDPOINT
 from module_5.Cinescope.constants import BASE_URL
+from module_5.Cinescope.models.base_models import TestUser
 
 class AuthAPI(CustomRequester):
     """
@@ -11,18 +12,34 @@ class AuthAPI(CustomRequester):
     def __init__(self, session):
         super().__init__(session=session, base_url=BASE_URL)
 
-    def register_user(self, user_data, expected_status=201):
-        """
-        Регистрация нового пользователя.
-        :param user_data: Данные пользователя.
-        :param expected_status: Ожидаемый статус-код.
-        """
+   # def register_user(self, user_data, expected_status=201):
+   #      """
+   #      Регистрация нового пользователя.
+   #      :param user_data: Данные пользователя.
+   #      :param expected_status: Ожидаемый статус-код.
+   #      """
+   #      return self.send_request(
+   #          method="POST",
+   #          endpoint=REGISTER_ENDPOINT,
+   #          data=user_data,
+   #          expected_status=expected_status
+   #      )
+
+    # def register_user(self, user_data: TestUser):
+    #     """Регистрирует нового пользователя"""
+    #     payload = user_data.model_dump(mode="json", exclude_unset=True)  # сразу dict
+    #     return self.requester.send_request("POST", "/register", data=payload)
+
+    def register_user(self, user_data: TestUser, expected_status: int = 201):
+        """Регистрирует нового пользователя."""
+        payload = user_data.model_dump(mode="json", exclude_unset=True)
         return self.send_request(
-            method="POST",
-            endpoint=REGISTER_ENDPOINT,
-            data=user_data,
-            expected_status=expected_status
+            "POST",
+            "/register",
+            data=payload,
+            expected_status=expected_status,
         )
+
 
     def login_user(self, login_data, expected_status=200):
         """
