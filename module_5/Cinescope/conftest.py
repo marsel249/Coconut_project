@@ -18,7 +18,7 @@ faker = Faker()
 
 '''
 Фикстура до рефакторинга
-
+'''
 @pytest.fixture(scope="session")
 def test_user():
     """
@@ -34,19 +34,7 @@ def test_user():
         "password": random_password,
         "passwordRepeat": random_password,
         "roles": Roles.USER.value
-    }'''
-
-@pytest.fixture
-def test_user() -> TestUser:
-    random_password = DataGenerator.generate_random_password()
-
-    return TestUser(
-        email=DataGenerator.generate_random_email(),
-        fullName=DataGenerator.generate_random_name(),
-        password=random_password,
-        passwordRepeat=random_password,
-        roles=[Roles.USER]#[Roles.USER.value]
-    )
+    }
 
 @pytest.fixture
 def registration_user_data() -> TestUser:
@@ -59,6 +47,18 @@ def registration_user_data() -> TestUser:
         passwordRepeat=random_password,
         roles=[Roles.USER]#[Roles.USER.value]
     )
+
+# @pytest.fixture
+# def registration_user_data() -> TestUser:
+#     random_password = DataGenerator.generate_random_password()
+#
+#     return TestUser(
+#         email=DataGenerator.generate_random_email(),
+#         fullName=DataGenerator.generate_random_name(),
+#         password=random_password,
+#         passwordRepeat=random_password,
+#         roles=[Roles.USER]#[Roles.USER.value]
+#     )
 
 @pytest.fixture()#scope="session")
 def registered_user(requester, test_user):
@@ -211,8 +211,8 @@ def creation_user_data(test_user):
     return updated_data'''
 
 @pytest.fixture(scope="function")
-def creation_user_data(test_user: TestUser) -> dict:
-    payload = test_user.model_dump()  # Преобразовали модель test_user  в словарь
+def creation_user_data(registration_user_data: TestUser) -> dict:
+    payload = registration_user_data.model_dump()  # Преобразовали модель test_user  в словарь
     payload["verified"] = True
     payload["banned"] = False
 

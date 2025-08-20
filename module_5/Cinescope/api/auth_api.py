@@ -94,18 +94,18 @@ class AuthAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    # def login_user(self, login_data, expected_status=201):
-    #     """
-    #     Авторизация пользователя.
-    #     :param login_data: Данные для логина.
-    #     :param expected_status: Ожидаемый статус-код.
-    #     """
-    #     return self.send_request(
-    #         method="POST",
-    #         endpoint=LOGIN_ENDPOINT,
-    #         data=login_data,
-    #         expected_status=expected_status
-    #     )
+    def login_user(self, login_data, expected_status=200):
+        """
+        Авторизация пользователя.
+        :param login_data: Данные для логина.
+        :param expected_status: Ожидаемый статус-код.
+        """
+        return self.send_request(
+            method="POST",
+            endpoint=LOGIN_ENDPOINT,
+            data=login_data,
+            expected_status=expected_status
+        )
 
     def authenticate(self, creds: tuple[str, str], expected_status: int = 200):
         body = {"email": creds[0], "password": creds[1]}

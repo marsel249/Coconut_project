@@ -103,8 +103,8 @@ from module_5.Cinescope.enums.enums import Roles
 class TestUser(BaseModel):
     email: EmailStr
     fullName: str = Field(min_length=1, max_length=80)
-    password: str = Field(min_length=8, max_length=64)
-    passwordRepeat: str
+    password: str  # = Field(min_length=8, max_length=64)
+    passwordRepeat: str = Field(..., min_length=1, max_length=20, description="passwordRepeat должен вполностью совпадать с полем password")
     roles: list[Roles] = Field(default_factory=lambda: [Roles.USER])
     verified: Optional[bool] = None
     banned: Optional[bool] = None
@@ -129,3 +129,68 @@ class RegisterUserResponse(BaseModel):
     createdAt: datetime.datetime
 
     model_config = ConfigDict(use_enum_values=True, extra="ignore")
+
+#Модели для логина
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+    # спокойно игнорируем лишние поля, если когда-то появятся
+    model_config = ConfigDict(extra='ignore')
+
+class LoginUser(BaseModel):
+    id: str
+    email: EmailStr
+    fullName: str
+    roles: list[Roles]
+    # парсим roles как Enum, но при дампе будут их строковые значения
+    model_config = ConfigDict(use_enum_values=True, extra='ignore')
+
+class LoginResponse(BaseModel):
+    accessToken: str
+    expiresIn: int          # в ответе это миллисекундный timestamp
+    refreshToken: str
+    user: LoginUser
+    model_config = ConfigDict(use_enum_values=True, extra='ignore')
+
+    # это точно соответствует примеру ответа
+    # (accessToken, expiresIn, refreshToken, user{id, email, fullName, roles}).
+
+class ErrorResponse(BaseModel):
+    message: str
+    error: str
+    statusCode: int
+    model_config = ConfigDict(extra='ignore')
+
+'''
+Пример применения model_config
+
+from enum import Enum
+from pydantic import BaseModel, ConfigDict
+
+class Color(str, Enum):
+    RED = "red"
+    GREEN = "green"
+    BLUE = "blue"
+
+class MyModel(BaseModel):
+    color: Color
+    
+    # Включаем use_enum_values
+    model_config = ConfigDict(use_enum_values=True)
+
+# Создаём экземпляр модели
+model = MyModel(color=Color.RED)
+
+# Сериализуем в dict
+print(model.model_dump())  # {'color': 'red'} (без use_enum_values было бы {'color': Color.RED})
+
+
+Пример с игнором:
+class User(BaseModel):
+    name: str
+    model_config = ConfigDict(extra="ignore")
+user = User(name="Alice", age=30)  # Без ошибки, поле 'age' проигнорировано
+print(user.model_dump())  # {'name': 'Alice'}'''
+
+
+
