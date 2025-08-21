@@ -1,5 +1,5 @@
-#booker
 import random
+from os import access
 
 from faker import Faker
 import pytest
@@ -14,7 +14,15 @@ from module_5.Cinescope.enums.enums import Roles
 from module_5.Cinescope.models.base_models import TestUser
 from enum import Enum
 
+import os
+from dotenv import load_dotenv
+from module_5.Cinescope.db_requester.models import UserDBModel
+from sqlalchemy import create_engine, Column, String, Boolean, DateTime, text
+from sqlalchemy.orm import declarative_base, sessionmaker
+import datetime
+
 faker = Faker()
+load_dotenv()
 
 '''
 Фикстура до рефакторинга
@@ -251,7 +259,7 @@ def super_admin(user_session):
     return super_admin
 
 @pytest.fixture
-def common_user(user_session, super_admin, creation_user_data):
+def common_user(user_session, super_admin, creation_user_data): #Создание юзера с ролью - user
     new_session = user_session()
 
     common_user = User(
@@ -266,7 +274,7 @@ def common_user(user_session, super_admin, creation_user_data):
 
 
 @pytest.fixture
-def admin_user(user_session, super_admin, creation_user_data):
+def admin_user(user_session, super_admin, creation_user_data): #Создание юзера с ролью - admin
     session = user_session()
 
     payload = dict(creation_user_data)
@@ -289,6 +297,84 @@ def admin_user(user_session, super_admin, creation_user_data):
     return admin
 
 
+#Фикстура подключения к БД
+USERNAME = os.getenv('SUPER_ADMIN_USERNAME')
+HOST = os.getenv('DB_HOST')
+PORT = os.getenv('DB_PORT')
+DATABASE_NAME = os.getenv('DATABASE_NAME_MOVIE')
+USERNAME = os.getenv('DB_USERNAME')
+PASSWORD = os.getenv('DB_PASSWORD')
+
+#Оставим эти данные тут для наглядности. но не стоит хранить креды в гитлабе. они должны быть заданы через env
+# HOST = "80.90.191.123"
+# PORT = 31200
+# DATABASE_NAME = "db_movies"
+# USERNAME = "postgres"
+# PASSWORD = "AmwFrtnR2"
+
+engine = create_engine(f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE_NAME}") # Создаем движок (engine) для подключения к базе данных
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) # Создаем фабрику сессий
+
+@pytest.fixture(scope="module")
+def db_session_after_close():
+    """
+    Фикстура, которая создает и возвращает сессию для работы с базой данных.
+    После завершения теста сессия автоматически закрывается.
+    """
+    # Создаем новую сессию
+    db_session = SessionLocal()
+    # Возвращаем сессию в тест
+    yield db_session
+    # Закрываем сессию после завершения теста
+    db_session.close()
+
+
+@pytest.fixture(scope="module")
+def db_session_with_create_user():
+    """
+    Фикстура с областью видимости module.
+    Тестовые данные создаются один раз для всех тестов в модуле.
+    """
+    session = SessionLocal()
+
+
+    # Создаем тестовые данные, на основе модели UserDBModel
+    test_user = UserDBModel(
+        id = DataGenerator.generate_random_user_id(),
+        email = DataGenerator.generate_random_email(),
+        full_name = DataGenerator.generate_random_name(),
+        password = DataGenerator.generate_random_password(),
+        created_at = datetime.datetime.now(),
+        updated_at = datetime.datetime.now(),
+        verified = False,
+        banned = False,
+        roles = "{USER}"
+    )
+    session.add(test_user) #добавляем обьект в базу данных
+    session.commit() #сохраняем изменения для всех остальных подключений
+
+    yield session # можете запустить тесты в дебаг режиме и поставить тут брекпойнт
+                  # зайдите в базу и убедитесь что новый обьект был создан
+
+		#код ниже выполнится после всех запущеных тестов
+    session.delete(test_user) # Удаляем тестовые данные
+    session.commit() # сохраняем изменения для всех остальных подключений
+    session.close() #завершем сессию (отключаемся от базы данных)
+
+@pytest.fixture
+def super_admin_token(user_session):
+    new_session = user_session()
+
+    super_admin = User(
+        SuperAdminCreds.USERNAME,
+        SuperAdminCreds.PASSWORD,
+        Roles.SUPER_ADMIN.value,
+        new_session)
+
+    response = super_admin.api.auth_api.authenticate(super_admin.creds)
+    access_token = response['accessToken']
+
+    return access_token
 
 
 

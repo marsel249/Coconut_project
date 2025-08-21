@@ -147,5 +147,10 @@ def test_admin_creation_logs(admin_user):
 def test_admin_creation_logs_mark(admin_user):
     assert True
 
+def test_db_fixture(db_session_with_create_user):
+    assert True
+
+def test_db_fixture_(db_session_after_close):
+    assert True
 
 

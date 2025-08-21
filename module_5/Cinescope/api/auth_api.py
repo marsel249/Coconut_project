@@ -124,3 +124,6 @@ class AuthAPI(CustomRequester):
 
     def del_auth(self):
         self._update_session_headers(authorization="Bearer ")
+
+    def update_session_headers_with_token(self, data):
+        self._update_session_headers(authorization="Bearer " + data)

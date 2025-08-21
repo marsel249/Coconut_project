@@ -100,6 +100,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator, ValidationInfo, ConfigDict
 from module_5.Cinescope.enums.enums import Roles
 
+
 class TestUser(BaseModel):
     email: EmailStr
     fullName: str = Field(min_length=1, max_length=80)
@@ -161,6 +162,10 @@ class ErrorResponse(BaseModel):
     statusCode: int
     model_config = ConfigDict(extra='ignore')
 
+
+
+
+
 '''
 Пример применения model_config
 
@@ -191,6 +196,8 @@ class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
 user = User(name="Alice", age=30)  # Без ошибки, поле 'age' проигнорировано
 print(user.model_dump())  # {'name': 'Alice'}'''
+
+
 
 
 

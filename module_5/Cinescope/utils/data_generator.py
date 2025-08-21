@@ -78,3 +78,8 @@ class DataGenerator:
     @staticmethod
     def generate_random_word():
         return faker.word()
+
+    @staticmethod
+    def generate_random_user_id() -> str:
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+        return f"random_id_{ts}{uuid4().hex[:5]}"
