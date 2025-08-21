@@ -48,30 +48,33 @@ class MoviesAPI(CustomRequester):
             expected_status=expected_status
         )
 
-    def create_movie(self, movie_data, expected_status=201):
+    def create_movie(self, movie_data, expected_status=201, token=None):
         """Создать новый фильм"""
         return self.send_request(
             method="POST",
             endpoint="/movies",
             data=movie_data,
-            expected_status=expected_status
+            expected_status=expected_status,
+            token=token
         )
 
-    def update_movie(self, movie_id, update_data, expected_status=200):
+    def update_movie(self, movie_id, update_data, expected_status=200, token=None):
         """Обновить данные фильма"""
         return self.send_request(
             method="PATCH",
             endpoint=f"/movies/{movie_id}",
             data=update_data,
-            expected_status=expected_status
+            expected_status=expected_status,
+            token=token
         )
 
-    def delete_movie(self, movie_id, expected_status=204):
+    def delete_movie(self, movie_id, expected_status=204, token=None):
         """Удалить фильм"""
         return self.send_request(
             method="DELETE",
             endpoint=f"/movies/{movie_id}",
-            expected_status=expected_status
+            expected_status=expected_status,
+            token=token
         )
 
     def info_id(self, variable):

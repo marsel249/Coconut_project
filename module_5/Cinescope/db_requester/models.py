@@ -45,3 +45,9 @@ class PaymentsDBModel(Base):
     amount = Column(String, nullable=False)
     total = Column(String, nullable=False)
     created_at = Column(String, nullable=False)
+
+# Модель для таблицы accounts_transaction_template
+class AccountTransactionTemplate(Base):
+    __tablename__ = 'accounts_transaction_template'
+    user = Column(String, primary_key=True)
+    balance = Column(Integer, nullable=False)

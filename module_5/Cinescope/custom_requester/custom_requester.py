@@ -166,7 +166,7 @@ import json
 import logging
 from pydantic import BaseModel
 from module_5.Cinescope.constants import RED, GREEN, RESET, CYAN
-from typing import Any
+from typing import Any, Iterable
 
 
 
@@ -185,7 +185,7 @@ class CustomRequester:
         self.session.headers.update(self.headers)
 
     def send_request(self, method: str, endpoint: str, data=None,
-                     expected_status: int | None = None, params=None):
+                     expected_status: int |Iterable[int]| None = None, params=None, token=None):
         url = f"{self.base_url}{endpoint}"
 
         # Подготовка payload
@@ -196,22 +196,51 @@ class CustomRequester:
         else:
             payload = data
 
+        #Добавляем токен в хедеры, если его передали в запросе
+        if token is not None:
+            self.headers.update(authorization="Bearer " + token)
+            self.session.headers.update(self.headers)
+
+
         # Выполняем запрос
         resp = self.session.request(method=method.upper(), url=url, json=payload, params=params)
 
         # Лог запроса/ответа
         self.log_request_and_response(resp)
 
-        # Проверка ожидаемого статуса
-        if expected_status is not None and resp.status_code != expected_status:
-            try:
-                body = resp.json()
-            except Exception:
-                body = resp.text
-            raise AssertionError(
-                f"Unexpected status {resp.status_code} for {method} {endpoint}; "
-                f"expected {expected_status}. Body: {body}"
-            )
+        # # Проверка ожидаемого статуса
+        # if expected_status is not None and resp.status_code != expected_status:
+        #     try:
+        #         body = resp.json()
+        #     except Exception:
+        #         body = resp.text
+        #     raise AssertionError(
+        #         f"Unexpected status {resp.status_code} for {method} {endpoint}; "
+        #         f"expected {expected_status}. Body: {body}"
+        #     )
+        # return resp
+
+        #Эта логика позволяет использовать кортежи, словари, множества, в expected_status
+        if expected_status is not None:
+            if isinstance(expected_status, int):
+                allowed = {expected_status}
+            elif isinstance(expected_status, (tuple, list, set)):
+                allowed = set(expected_status)
+            else:
+                raise TypeError(
+                    f"expected_status must be int, tuple/list/set of ints, or None. Got: {type(expected_status)}"
+                )
+
+            if resp.status_code not in allowed:
+                try:
+                    body = resp.json()
+                except Exception:
+                    body = resp.text
+                raise AssertionError(
+                    f"Unexpected status {resp.status_code} for {method} {endpoint}; "
+                    f"expected {sorted(allowed)}. Body: {body}"
+                )
+
         return resp
 
     def _update_session_headers(self, **kwargs):
