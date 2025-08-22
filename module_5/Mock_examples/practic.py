@@ -1,64 +1,70 @@
-# test_services\service_what_is_today.py
-
-# для запуска сервера
-# pip install -r requirements.txt
-# python test_services\service_what_is_today.py
-# для проверки работоспособности curl http://127.0.0.1:16002/ping
-
+#Реализация теста, для проверки локального сервиса what_is_today
 import datetime
+import pytz
+import requests
+from pydantic import BaseModel, Field
+from datetime import datetime
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 
-app = FastAPI()
+# Модель Pydantic для ответа сервера worldclockapi (ответ от стороннего сервиса)
+class WorldClockResponse(BaseModel):
+    id: str = Field(alias="$id")  # Используем алиас для поля "$id"
+    currentDateTime: str
+    utcOffset: str
+    isDayLightSavingsTime: bool
+    dayOfTheWeek: str
+    timeZoneName: str
+    currentFileTime: int
+    ordinalDate: str
+    serviceResponse: None
+
+    class Config:
+        # Разрешаем использование алиасов при парсинге JSON
+        allow_population_by_field_name = True
 
 
-# Модель для входного JSON
+# Модель для запроса к сервису TodayIsHoliday (запрос к нашему, локальному сервису)
 class DateTimeRequest(BaseModel):
     currentDateTime: str  # Формат: "2025-02-13T21:43Z"
 
 
-# Список праздников в России (пример)
-russian_holidays = {
-    "01-01": "Новый год",
-    "01-07": "Рождество Христово",
-    "02-23": "День защитника Отечества",
-    "03-08": "Международный женский день",
-    "05-01": "Праздник Весны и Труда",
-    "05-09": "День Победы",
-    "06-12": "День России",
-    "11-04": "День народного единства",
-    "12-31": "Канун Нового года"
-}
+# Модель для ответа от сервиса TodayIsHoliday (наш локальный сервис, what_is_today, парсим ответ)
+class WhatIsTodayResponse(BaseModel):
+    message: str
 
 
-@app.post("/what_is_today")
-def what_is_today(request: DateTimeRequest):
-    try:
-        # Парсим дату из входного JSON
-        date_str = request.currentDateTime
-        date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%MZ")
-
-        # Получаем месяц и день в формате "MM-DD"
-        month_day = date_obj.strftime("%m-%d")
-
-        # Проверяем, есть ли праздник на эту дату
-        holiday = russian_holidays.get(month_day, "Сегодня нет праздников в России.")
-
-        return {"message": holiday}
+# Функция выолняющая запрос в сервис worldclockapi для получения текущей даты
+def get_worldclockap_time() -> WorldClockResponse:
+    # Выполняем GET-запрос
+    response = requests.get("http://worldclockapi.com/api/json/utc/now")  # Запрос в реальный сервис
+    # Проверяем статус ответа
+    assert response.status_code == 200, "Удаленный сервис недоступен"
+    # Парсим JSON-ответ с использованием Pydantic модели
+    return WorldClockResponse(**response.json())
 
 
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Некорректный формат даты. Используйте формат 'YYYY-MM-DDTHH:MMZ'.")
+class TestTodayIsHolidayServiceAPI:
+    # worldclockap
+    def test_worldclockap(self):  # проверка работоспособности сервиса worldclockap
+        world_clock_response = get_worldclockap_time()
+        # Выводим текущую дату и время
+        current_date_time = world_clock_response.currentDateTime
+        print(f"Текущая дата и время: {current_date_time=}")
 
+        assert current_date_time == datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%MZ"), "Дата не совпадает"
 
-@app.get("/ping")
-def ping():
-    return "PONG!"
+    def test_what_is_today(self):  # проверка работоспособности Fake сервиса what_is_today
+        # Запрашиваем текущее время у сервиса worldclockap
+        world_clock_response = get_worldclockap_time()
 
+        what_is_today_response = requests.post("http://127.0.0.1:16002/what_is_today",
+                                               data=DateTimeRequest(
+                                                   currentDateTime=world_clock_response.currentDateTime).model_dump_json()
+                                               )
 
-# Запуск сервера
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=16002)
+        # Проверяем статус ответа от тестируемогосервиса
+        assert what_is_today_response.status_code == 200, "Удаленный сервис недоступен"
+        # Парсим JSON-ответ от тестируемого сервиса с использованием Pydantic модели
+        what_is_today_data = WhatIsTodayResponse(**what_is_today_response.json())
+        # Проводим валидацию ответа тестируемого сервиса
+        assert what_is_today_data.message == "Сегодня нет праздников в России.", "Сегодня нет праздника!"
