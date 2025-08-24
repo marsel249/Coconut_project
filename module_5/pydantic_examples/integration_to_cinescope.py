@@ -9,7 +9,7 @@
 #     fullName: str
 #     password: str
 #     passwordRepeat: str = Field(..., min_length=1, max_length=20,
-#                                 description="passwordRepeat должен вполностью совпадать с полем password")
+#                                 description="passwordRepeat должен полностью совпадать с полем password")
 #     roles: list[Roles] = [Roles.USER]
 #     verified: Optional[bool] = None
 #     banned: Optional[bool] = None

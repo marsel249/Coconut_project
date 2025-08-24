@@ -376,5 +376,17 @@ def super_admin_token(user_session):
 
     return access_token
 
+@pytest.fixture(scope="module")
+def db_session():
+    """
+    Фикстура, которая создает и возвращает сессию для работы с базой данных.
+    После завершения теста сессия автоматически закрывается.
+    """
+    # Создаем новую сессию
+    db_session = SessionLocal()
+    # Возвращаем сессию в тест
+    yield db_session
+    # Закрываем сессию после завершения теста
+    db_session.close()
 
 

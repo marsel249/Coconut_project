@@ -95,17 +95,18 @@ class Config:
 
 '''
 
-import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, field_validator, ValidationInfo, ConfigDict
+from datetime import datetime
+from typing import Optional, List
+from pydantic import BaseModel, EmailStr, Field, field_validator, ValidationInfo, ConfigDict, HttpUrl
 from module_5.Cinescope.enums.enums import Roles
+from enum import Enum
 
 
 class TestUser(BaseModel):
     email: EmailStr
     fullName: str = Field(min_length=1, max_length=80)
     password: str  # = Field(min_length=8, max_length=64)
-    passwordRepeat: str = Field(..., min_length=1, max_length=20, description="passwordRepeat должен вполностью совпадать с полем password")
+    passwordRepeat: str = Field(..., min_length=1, max_length=20, description="passwordRepeat должен полностью совпадать с полем password")
     roles: list[Roles] = Field(default_factory=lambda: [Roles.USER])
     verified: Optional[bool] = None
     banned: Optional[bool] = None
@@ -127,7 +128,7 @@ class RegisterUserResponse(BaseModel):
     roles: list[Roles]
     verified: bool
     banned: bool
-    createdAt: datetime.datetime
+    createdAt: datetime
 
     model_config = ConfigDict(use_enum_values=True, extra="ignore")
 
@@ -161,6 +162,59 @@ class ErrorResponse(BaseModel):
     error: str
     statusCode: int
     model_config = ConfigDict(extra='ignore')
+
+
+#Модели для экзамена
+
+class LocationMovie(str, Enum):
+    spb = 'SPB'
+    msk = 'MSK'
+
+class MovieTestData(BaseModel):
+    name: str = Field(min_length=1, max_length=76)
+    imageUrl: str = Field(default=None, min_length=5, max_length=80)
+    price: int = Field(gt=0, le=99999)
+    description: str = Field(default=None, min_length=1, max_length=999)
+    location: LocationMovie
+    published: bool
+    genreId: int = Field(gt=0, le=10)
+
+class MovieGenre(BaseModel):
+    name: str = Field(min_length=1, max_length=15)
+
+class MovieInResponse(BaseModel):
+    id: int
+    name: str = Field(min_length=1, max_length=76)
+    description: str = Field(default=None, min_length=1, max_length=999)
+    genreId: int = Field(gt=0, le=10)
+    imageUrl: HttpUrl = Field(default=None)
+    price: int = Field(gt=0, le=99999)
+    rating: float = Field(ge=0, lt=100)
+    location: LocationMovie
+    published: bool
+    createdAt: datetime
+    genre: MovieGenre
+
+
+class MovieResponse(BaseModel):
+    movies: List[MovieInResponse]
+    count: int
+    page: int
+    pageSize: int = Field(gt=0, le=20)
+    pageCount: int = Field(gt=0)
+
+
+
+
+    '''
+     "name": " ".join(faker.words(2)), #faker.word(),
+            "imageUrl": faker.url(),
+            "price": random.randint(1, 10000),
+            "description": faker.text(),
+            "location": random.choice(locations_choice),
+            "published": bool(str(faker.boolean()).lower()),  # random.choice(boolean_choice)
+            "genreId": random.randint(1, 5)
+    '''
 
 
 
