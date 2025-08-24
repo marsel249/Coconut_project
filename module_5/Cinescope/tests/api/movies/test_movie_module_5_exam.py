@@ -1,4 +1,3 @@
-import allure
 import pytest
 
 from module_4.Cinescope.conftest import create_movie

@@ -187,7 +187,7 @@ class MovieInResponse(BaseModel):
     name: str = Field(min_length=1, max_length=76)
     description: str = Field(default=None, min_length=1, max_length=999)
     genreId: int = Field(gt=0, le=10)
-    imageUrl: HttpUrl = Field(default=None)
+    imageUrl: HttpUrl | None = Field(default=None)
     price: int = Field(gt=0, le=99999)
     rating: float = Field(ge=0, lt=100)
     location: LocationMovie
