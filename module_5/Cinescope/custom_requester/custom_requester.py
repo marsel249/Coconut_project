@@ -197,13 +197,14 @@ class CustomRequester:
             payload = data
 
         #Добавляем токен в хедеры, если его передали в запросе
+        req_headers = None
         if token is not None:
-            self.headers.update(authorization="Bearer " + token)
-            self.session.headers.update(self.headers)
+            req_headers = dict(self.session.headers)
+            req_headers['Authorization'] = f'Bearer {token}'
 
 
         # Выполняем запрос
-        resp = self.session.request(method=method.upper(), url=url, json=payload, params=params)
+        resp = self.session.request(method=method.upper(), url=url, json=payload, params=params, headers=req_headers)
 
         # Лог запроса/ответа
         self.log_request_and_response(resp)

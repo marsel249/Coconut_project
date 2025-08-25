@@ -18,6 +18,12 @@ class ApiManager:
 
     def close_session(self):
         self.session.close()
+
+    def clear_auth(self):
+        auth = {'authorization': None}
+        self.session.headers.update(auth)
+        # self.session.headers.clear()
+        self.session.cookies.clear()
 '''
     Pytest->>TestFile: Запуск теста test_register_user()
     TestFile->>Conftest: Запрос фикстур (api_manager, test_user)

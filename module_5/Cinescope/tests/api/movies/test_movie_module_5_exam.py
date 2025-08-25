@@ -73,7 +73,7 @@ class TestPostMoviesAPI:
     @allure.label('qa_test_allure', 'QA_name')
     @allure.title('Double movie')
 
-    def test_double_create_movie_new_method_with_allure(self, super_admin_token, api_manager, db_session):
+    def test_double_create_movie_new_method_with_allure(self, super_admin, super_admin_token, api_manager, db_session):
 
         with allure.step('Генерируем рандомный фильм'):
             movie_data = DataGenerator.generate_random_movie()
@@ -86,10 +86,12 @@ class TestPostMoviesAPI:
         with allure.step('Находим фильм по id в базе данных'):
             db_session.query(MovieDBModel).filter_by(id=create_movie_id)
         with allure.step('Пытаемся создать новый фильм с помощью запроса (ошибка, 409)'):
-            create_second_movie = api_manager.movies_api.create_movie(movie_data, expected_status=409, token=super_admin_token)
+            #create_second_movie = api_manager.movies_api.create_movie(movie_data, expected_status=409, token=super_admin_token)
+            # #Запрос реализован, через токен из фикстуры
+            create_second_movie = super_admin.api.movies_api.create_movie(movie_data, expected_status=409)
+            #Реализация, другим методом, ролевая модель
         with allure.step('Валидируем ответ с ошибкой, с помощью модели'):
             ErrorResponse.model_validate(create_second_movie.json())
-
 
 
 

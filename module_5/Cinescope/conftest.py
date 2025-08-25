@@ -362,19 +362,11 @@ def db_session_with_create_user():
     session.close() #завершем сессию (отключаемся от базы данных)
 
 @pytest.fixture
-def super_admin_token(user_session):
-    new_session = user_session()
-
-    super_admin = User(
-        SuperAdminCreds.USERNAME,
-        SuperAdminCreds.PASSWORD,
-        Roles.SUPER_ADMIN.value,
-        new_session)
-
-    response = super_admin.api.auth_api.authenticate(super_admin.creds)
-    access_token = response['accessToken']
-
-    return access_token
+def super_admin_token(api_manager):
+    response = api_manager.auth_api.authenticate(SUPER_ADMIN_CREDS)
+    token = response['accessToken']
+    api_manager.clear_auth()
+    return token
 
 @pytest.fixture(scope="module")
 def db_session():
