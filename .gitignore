@@ -11,6 +11,7 @@ module_4/Cinescope/tests/api/test_other_api.py
 module_4/Cinescope/tests/ui
 .env
 .env.*
+module_7
 
 ## Виртуальные окружения
 #venv/

@@ -60,6 +60,7 @@ import time
 '''Декоратор из урока'''
 # import time
 #
+#
 # def my_new_decorator_retry(func):
 #     def wrapper_time_retry(*args, **kwargs):
 #         retry_seconds = [3, 5, 7]
@@ -69,15 +70,52 @@ import time
 #             except ZeroDivisionError as e:
 #                 print(f'Error, {e}, retry in {seconds} seconds')
 #                 time.sleep(seconds)
-#         return func(*args, **kwargs)
+#         #return func(*args, **kwargs)
 #     return wrapper_time_retry
 #
 # @my_new_decorator_retry
 # def math_ab(a, b):
-#     print(f'Try a / b')
+#     print(f'Try {a} / {b}')
 #     return a / b
 #
 # math_ab(5, 0)
+
+
+#______
+
+# def add_text(func):
+#     def wrapper():
+#         print('before')
+#         func()
+#         print('after')
+#     return wrapper
+#
+# @add_text
+# def something():
+#     print('my_original_func')
+#
+# something()
+#
+# # # Тоже самое, что и с декоратором @
+# # something = add_text(something)
+# # something()
+
+#_____
+
+def add_logs(func):
+    def wrapper(*args):
+        print(f'start {func.__name__}')
+        func(*args)
+        print(f'finish {func.__name__}')
+    return wrapper
+
+@add_logs
+def something(x):
+    print(x * 2)
+
+something(4)
+
+
 
 #____________
 '''Методы класса из курса'''
@@ -111,20 +149,20 @@ import time
 # obj.method()  # Вывод: This is a method of <class '__main__.Example'>.
 #____________
 
-class Cat:
-    count = 0
-
-    def __init__(self, name):
-        self.name = name
-        Cat.count += 1  # Увеличиваем счетчик при создании объекта
-
-    @classmethod
-    def get_count(cls):
-        return cls.count
-
-cat1 = Cat("Barsik")
-cat2 = Cat("Murzik")
-cat3 = Cat("Pushok")
-
-print(Cat.get_count())      # Вывод: 3
-print(cat1.get_count())    #Вывод: 3
+# class Cat:
+#     count = 0
+#
+#     def __init__(self, name):
+#         self.name = name
+#         Cat.count += 1  # Увеличиваем счетчик при создании объекта
+#
+#     @classmethod
+#     def get_count(cls):
+#         return cls.count
+#
+# cat1 = Cat("Barsik")
+# cat2 = Cat("Murzik")
+# cat3 = Cat("Pushok")
+#
+# print(Cat.get_count())      # Вывод: 3
+# print(cat1.get_count())    #Вывод: 3
